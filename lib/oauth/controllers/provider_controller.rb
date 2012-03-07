@@ -56,6 +56,8 @@ module OAuth
         if params[:oauth_token]
           @token = ::RequestToken.find_by_token! params[:oauth_token]
           oauth1_authorize
+        elsif ["code","token"].include?(params[:response_type]) # pick flow
+          send "oauth2_authorize_#{params[:response_type]}"
         else
           if request.post?
             @authorizer = OAuth::Provider::Authorizer.new current_user, user_authorizes_token?, params
